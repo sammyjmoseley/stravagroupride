@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block scripts %}
+<script src="{% static 'newaccount.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+
+
+<table>
+  <tr>
+    <td><p>Firstname:</p></td>
+    <td><input type="text" id="firstname"></td>
+    <td><p>Lastname:</p></td>
+    <td><input type="text" id="lastname"></td>
+  </tr>
+  <tr>
+    <td><p>Username:</p></td>
+    <td><input type="text" id="username"></td>
+  </tr>
+  <tr>
+    <td><p>Password:</p></td>
+    <td><input type="text" id="password"></td>
+  </tr>
+</table>
+
+<button onclick="validateFormOnSubmit()">Register</button>
+<a href="/login">Already an account?</a>
+
+{% endblock %}

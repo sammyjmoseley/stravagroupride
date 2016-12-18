@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% load static%}
+
+{% block content %}
+<a href="{{ authorize_url }}"> <img src="{% static 'connect_strava.png' %}"></a>
+{% endblock %}
