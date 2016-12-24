@@ -1,5 +1,5 @@
 """
-Django settings for  project, on Heroku. For more info, see:
+Django settings for website project, on Heroku. For more info, see:
 https://github.com/heroku/heroku-django-template
 
 For more information on this file, see
@@ -65,13 +65,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'website.context_processors.api_keys'
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = '.wsgi.application'
+WSGI_APPLICATION = 'website.wsgi.application'
 
 
 # Database
@@ -127,8 +126,6 @@ ALLOWED_HOSTS = ['*']
 
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
-
-GOOGLE_API = "AIzaSyBylN8Ogx4PL65ZAY3dTpMJQFhdEPCgexI"
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (

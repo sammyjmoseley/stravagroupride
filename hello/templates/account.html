@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block scripts %}
+<script src="{% static 'newaccount.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<p>{{ name }} is logged in</p>
+{% endif%}
+
+{%if connectedToStrava %}
+<p>Connected to strava!</p>
+{% else %}
+<a href="{{ authorize_url }}"> <img src="{% static 'connect_strava.png' %}"></a>
+{%endif%}
+
+{%if admin %}
+<a href="/admin/users">View Users</a> <br>
+<button onclick=refresh_activities()>Refresh Activities</button> <br>
+<a href="/admin/view_activities">View Activities</a><br>
+{% endif %}
+<a href="/logout">Logout</a>
+
+{% endblock %}

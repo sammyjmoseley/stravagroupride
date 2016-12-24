@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block scripts %}
+<script src="{% static 'newaccount.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<p>{{ name }} is logged in</p>
+{% endif%}
+<table>
+  <tr>
+    <td>Name</td>
+    <td>Username</td>
+  </tr>
+{%for user in user_list%}
+<tr>
+  <td>{{user.name}}</td>
+  <td>{{user.username}}</td>
+  <td><button onclick=deleteUser("{{user.username}}")>Delete</button></td>
+{%endfor%}
+</table>
+{% endblock %}

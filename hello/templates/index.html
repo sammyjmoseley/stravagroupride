@@ -4,7 +4,9 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<p>{{ userv.firstname }} are logged in</p>
+<p>{{ name }} is logged in</p><br>
+<a href="/map">Map</a>
 {% endif%}
+
 
 {% endblock %}

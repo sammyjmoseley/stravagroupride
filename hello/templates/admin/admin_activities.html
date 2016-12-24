@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block scripts %}
+<script src="{% static 'newaccount.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<p>{{ name }} is logged in</p>
+{% endif%}
+<td><button onclick=delete_activity(-1)>Delete All</button></td>
+<table>
+  <tr>
+    <td>User</td>
+    <td>Activity Title</td>
+    <td></td>
+  </tr>
+{% for act in activities %}
+<tr>
+  <td>{{act.athlete_name}}</td>
+  <td>{{act.title}}</td>
+  <td><button onclick=delete_activity({{act.id}})>Delete</button></td>
+{% endfor %}
+</table>
+{% endblock %}
