@@ -1,6 +1,8 @@
 # python-getting-started
 
-To run venv source env/bin/activate
+To run : venv source env/bin/activate
+
+To count number of line run: find . -name '*.*' -not -path "./env*" -not -path "./.git*" | xargs wc -l
 
 A barebones Python app, which can easily be deployed to Heroku.
 

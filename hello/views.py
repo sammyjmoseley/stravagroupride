@@ -52,9 +52,9 @@ def strava_authorize(request):
     access_token = client.exchange_code_for_token(client_id=client_id, client_secret=client_secret, code=code)
     athlete_id = client.get_athlete().id
     print >> sys.stderr, access_token + "\n"
-    if UserInfo.objects.filter(user=request.user).exists():
+    if UserInfo.objects.filter(athlete_id=athlete_id).exists():
+        UserInfo.objects.get(athlete_id=athlete_id).user = request.user
         request.user.userinfo.strava_code = access_token
-        request.user.userinfo.athlete_id = athlete_id
         request.user.userinfo.save()
     else:
         user = UserInfo(user=request.user, strava_code=access_token, athlete_id=athlete_id)
@@ -131,7 +131,7 @@ def delete_user(request):
 
 @user_passes_test(is_administrator, login_url='/login')
 def refresh_activities(request):
-    threading.Thread(target=Activity.getUserActivities(request.user.userinfo), args=()).start()
+    threading.Thread(target=Activity.getUserActivities, args=(request.user.userinfo,)).start()
     return HttpResponse(status=200)
 
 @user_passes_test(is_administrator, login_url='/login')
@@ -151,8 +151,13 @@ def delete_activity(request):
 def view_map(request):
     def get_user_list():
         user_list = []
-        for u in User.objects.all():
-            user_list += [{"athlete_id" : u.userinfo.athlete_id, "fullname" : u.get_full_name()}]
+        for u in UserInfo.objects.all():
+            name = ""
+            if u.user == None:
+                name = u.strava_name
+            else:
+                name = u.user.get_full_name()
+            user_list += [{"athlete_id" : u.athlete_id, "fullname" : name}]
         return user_list
 
     polyline_list = []

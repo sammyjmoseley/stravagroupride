@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 
-<!-- {% block scripts %}
+{% block scripts %}
+<link rel="stylesheet" href="{% static 'styles.css' %}">
 <script src="{% static 'mapgraphics.js' %}"></script>
-{% endblock %} -->
+{% endblock %}
+
+
 
 {% block content %}
 
@@ -13,28 +16,36 @@
 
 
 <h3>My Google Maps Demo</h3>
-<table width=100% height=100%>
+<table onload="on_load()">
   <tr>
-    <td width=80%>
+    <td class="maprow" width=80% valign="top">
       <div id="map" style="height:400px; width:100%;"</div>
       </td>
-      <td width=20%>
-        <div>
+      <td class="maprow" width=20% valign="top">
+        <button onclick=select_all_visible()>Select All</button>
+        <button onclick=deselect_all_visible()>Deselect All</button>
+        <input type="text" name="search" onkeyup="filter(document)" placeholder="Search.." />
+        <div class="select_users" id="user_list">
+
           {% for u in user_list %}
-          <input type="checkbox" />{{ u.fullname }}<br />
+          <div name="{{ u.fullname }}">
+            <input type="checkbox" name="user_checkbox" id="check_{{u.athlete_id}}" onchange="checkbox_change()"/>{{ u.fullname }}<br />
+          </div>
           {% endfor %}
         </div>
       <td>
     </tr>
 </table>
       <script>
+      $('window').ready(on_load());
+
       function initMap() {
         function dist_from_polyline(cord, polyline){
           return google.maps.geometry.poly.isLocationOnEdge(cord, polyline, 0.004);
         }
 
         var uluru = {lat: -25.363, lng: 131.044};
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 4,
           center: uluru
         });
@@ -83,7 +94,7 @@
         };
 
 
-        function add_polyline(str, title, id, map){
+        function add_polyline(str, title, id, athlete_id, map){
           var path = new google.maps.Polyline({
             path: str,
             geodesic: true,
@@ -93,7 +104,7 @@
           });
           str = "<a href=\"https://www.strava.com/activities/" + id + "\">" + title + "</a>"
           polylines.push([path, str]);
-
+          add_polyline_dict(path, 'check_' + athlete_id);
           google.maps.event.addListener(path, 'click', function(e){
             click(e);
           });
@@ -110,7 +121,7 @@
         });
 
         {% for path in polyline_list %}
-        add_polyline({{path.points}}, "{{path.title}}", "{{path.id}}", map);
+        add_polyline({{path.points}}, "{{path.title}}", "{{path.id}}", "{{path.athlete_id}}", map);
         {%endfor%}
 
 

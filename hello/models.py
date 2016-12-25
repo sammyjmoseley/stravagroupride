@@ -19,8 +19,9 @@ def ctascii(str):
 athlete_cache={}
 
 class UserInfo(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    athlete_id = models.IntegerField()
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, blank=True, null=True)
+    athlete_id = models.IntegerField(unique=True)
+    strava_name = models.CharField(max_length=255, default = 'not set')
     strava_code = models.CharField(max_length=255, default = '')
 
 class Activity(models.Model):
@@ -67,12 +68,20 @@ class Activity(models.Model):
         act.month = activity.start_date_local.month
         act.dotw = activity.start_date_local.weekday()
 
+        if not UserInfo.objects.filter(athlete_id=act.athlete_id).exists():
+            user = UserInfo(athlete_id = act.athlete_id)
+            user.user = None
+            user.strava_name = act.athlete_name
+            user.save()
+            print >> sys.stderr, "other user added: " + user.strava_name.__repr__()
+
+
         #act.polyline = client.get_activity(activity.id).map.polyline
         act.polyline = activity.map.summary_polyline
         if act.polyline==None:
             act.polyline = ""
 
-        print >> sys.stderr, "Got Activity: "+ str(act.guid) + "," + str(act.polyline) + "\n"
+        # print >> sys.stderr, "Got Activity: "+ str(act.guid) + "," + str(act.polyline) + "\n"
         act.save()
         return act
 
