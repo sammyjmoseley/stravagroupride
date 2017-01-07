@@ -7,11 +7,9 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
-<p>{{ name }} is logged in</p>
-{% endif%}
-<td><button onclick=delete_activity(-1)>Delete All</button></td>
-<table>
+<td><button class="btn btn-default" onclick=delete_activity(-1)> <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete All</button></td>
+<div class="table-responsive">
+<table class="table">
   <tr>
     <td>User</td>
     <td>Activity Title</td>
@@ -21,7 +19,9 @@
 <tr>
   <td>{{act.athlete_name}}</td>
   <td>{{act.title}}</td>
-  <td><button onclick=delete_activity({{act.id}})>Delete</button></td>
+  <td><button class="btn btn-default" onclick=delete_activity({{act.id}})><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></td>
+  <!-- TODO Make this button borderless and have the trashcan change color on hover -->
 {% endfor %}
 </table>
+</div>
 {% endblock %}

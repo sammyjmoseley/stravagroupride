@@ -11,6 +11,7 @@ from django.conf import settings
 import sys
 import threading
 import re, polyline
+import json
 GOOGLE_API = "AIzaSyBylN8Ogx4PL65ZAY3dTpMJQFhdEPCgexI"
 
 client = Client()
@@ -71,7 +72,7 @@ def account(request):
     name = request.user.get_full_name()
     connectedToStrava = False
     try:
-        connectedToStrava = '' !=request.user.userinfo.strava_code and False
+        connectedToStrava = '' !=request.user.userinfo.strava_code
     except Exception as e:
         connectedToStrava = False
 
@@ -145,7 +146,26 @@ def delete_activity(request):
     act.delete()
     return HttpResponse(status=204)
 
+@login_required(login_url='/login')
+def change_name(request):
+    if 'firstname' not in request.POST or 'lastname' not in request.POST:
+        return HttpResponse(status=400)
 
+    request.user.first_name = request.POST['firstname']
+    request.user.last_name = request.POST['lastname']
+    request.user.save()
+    return HttpResponse(status=200);
+
+@login_required(login_url='/login')
+def change_password(request):
+    if 'old_password' not in request.POST or 'new_password' not in request.POST:
+        return HttpResponse(status=401)
+    if  not request.user.check_password(request.POST['old_password']):
+        return HttpResponse(status=400)
+
+    request.user.set_password(request.POST['new_password']);
+    request.user.save()
+    return HttpResponse(status=200);
 
 @login_required(login_url='/login')
 def view_map(request):
@@ -178,3 +198,13 @@ def view_map(request):
         'GOOGLE_API' : GOOGLE_API
     }
     return render(request, 'map.html', params)
+
+
+def get_followers(request, id):
+    followers=[]
+    if(request.user.userinfo != None):
+        followers += [str(request.user.userinfo.athlete_id)]
+        client = Client(access_token = request.user.userinfo.strava_code)
+        for f in client.get_athlete_friends():
+            followers += [str(f.id)]
+    return HttpResponse(json.dumps(followers), content_type="application/json")

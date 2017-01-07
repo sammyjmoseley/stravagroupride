@@ -9,21 +9,17 @@
 
 
 {% block content %}
-
-{% if user.is_authenticated %}
-<p>{{ name }} is logged in</p>
-{% endif%}
-
-
-<h3>My Google Maps Demo</h3>
 <table onload="on_load()">
   <tr>
+    <button onclick=draw_map_area() id="btn_drawing" style="background: #ca4104">Draw Area</button>
     <td class="maprow" width=80% valign="top">
       <div id="map" style="height:400px; width:100%;"</div>
       </td>
       <td class="maprow" width=20% valign="top">
         <button onclick=select_all_visible()>Select All</button>
         <button onclick=deselect_all_visible()>Deselect All</button>
+        <button onclick=repan_include_all()>Repan</button>
+        <button onclick=select_followers() id="btn_select_followers">Followers</button>
         <input type="text" name="search" onkeyup="filter(document)" placeholder="Search.." />
         <div class="select_users" id="user_list">
 
@@ -37,18 +33,23 @@
     </tr>
 </table>
       <script>
+
+
       $('window').ready(on_load());
 
       function initMap() {
+
         function dist_from_polyline(cord, polyline){
           return google.maps.geometry.poly.isLocationOnEdge(cord, polyline, 0.004);
         }
 
-        var uluru = {lat: -25.363, lng: 131.044};
+
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 4,
           center: uluru
         });
+
+
         // var marker = new google.maps.Marker({
         //   position: uluru,
         //   map: map
@@ -58,13 +59,9 @@
         var infowindow = new google.maps.InfoWindow({
           content: contentString
         });
-        var polylines = [];
-        var infolines = [];
-        function setColor(color, lines){
-          for (x in lines){
-            lines[x].setOptions({strokeColor: color});
-          }
-        }
+        polylines = [];
+        infolines = [];
+
 
         google.maps.event.addListener(infowindow, 'closeclick', function () {
           setColor('#FF0000', infolines);
@@ -81,40 +78,56 @@
 
             }
           }
+
+          infowindow.close();
+          line_unclicked(infolines);
+
           if(open){
+            //open infowindow
             infowindow.setOptions({position: loc.latLng});
             infowindow.setContent(str);
             infowindow.open(map);
+            for(var i in infolines){
+
+            }
             infolines = n_infolines;
-            setColor('#FFFF00', infolines);
+            line_clicked(infolines);
           } else{
-            infowindow.close();
-            setColor('#FF0000', infolines);
+            //if drawing is true add marker
+            // add marker
           }
         };
 
 
-        function add_polyline(str, title, id, athlete_id, map){
+        function add_polyline(points, title, id, athlete_id, map){
+
           var path = new google.maps.Polyline({
-            path: str,
+            path: points,
             geodesic: true,
             strokeColor: '#FF0000',
             strokeOpacity: 1.0,
-            strokeWeight: 2
+            strokeWeight: 2,
+            zIndex: 2
           });
           str = "<a href=\"https://www.strava.com/activities/" + id + "\">" + title + "</a>"
-          polylines.push([path, str]);
+          polylines.push([path, str, points]);
           add_polyline_dict(path, 'check_' + athlete_id);
           google.maps.event.addListener(path, 'click', function(e){
             click(e);
           });
 
 
+
           path.setMap(map);
+
+
 
 
         }
 
+        google.maps.event.addListenerOnce(map, 'idle', function(){
+          repan_include_all();
+        });
 
         map.addListener('click', function(e){
           click(e);

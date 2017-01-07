@@ -31,5 +31,8 @@ urlpatterns = [
     url(r'^create_user$', hello.views.create_user, name='create_user'),
     url(r'^strava$', hello.views.strava, name='strava'),
     url(r'^refresh_activities$', hello.views.refresh_activities),
-    url(r'^map$', hello.views.view_map)
+    url(r'^change_name$', hello.views.change_name),
+    url(r'^change_password$', hello.views.change_password),
+    url(r'^map$', hello.views.view_map),
+    url(r'^followers/(?P<id>[0-9]+)/$', hello.views.get_followers)
 ]

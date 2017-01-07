@@ -3,19 +3,114 @@
 
 {% block scripts %}
 <script src="{% static 'newaccount.js' %}"></script>
+<script src="{% static 'account.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 
 {% if user.is_authenticated %}
-<p>{{ name }} is logged in</p>
+<h4 id="name_header">{{ name }}</h4>
 {% endif%}
+
+<!--  WINDOWS-->
+<div class="modal fade" id="change_name" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document"> <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-
+        hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="change_name_title">Chage Name</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label for="firstname" class="col-sm-2">Firstname</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="firstname" placeholder="John">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="lastname" class="col-sm-2">Lastname</label>
+            <div class="col-sm-10">
+              <input class="form-control" id="lastname" placeholder="Doe" describedby="lastnamestatus">
+
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="change_name()" >Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="change_password" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document"> <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-
+        hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="change_password_title">Chage Password</h4>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label for="old_password" class="col-sm-2 control-label">Old Password</label>
+              <div class="col-sm-10">
+                <input class="form-control" id="old_password" placeholder="">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="new_password" class="col-sm-2 control-label">New Password</label>
+              <div class="col-sm-10">
+                <input class="form-control" id="new_password" placeholder="">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="new_password_confirm" class="col-sm-2 control-label">Confirm Password</label>
+              <div class="col-sm-10">
+                <input class="form-control" id="new_password_confirm" placeholder="">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="change_password()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- END WINDOWS -->
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change_name">
+  Change Name
+</button>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change_password">
+  Change Password
+</button> <br>
+
+
+<script>
+account_on_load();
+</script>
+
+
 
 {%if connectedToStrava %}
 <p>Connected to strava!</p>
 {% else %}
-<a href="{{ authorize_url }}"> <img src="{% static 'connect_strava.png' %}"></a>
+<a href="{{ authorize_url }}"> <img src="{% static 'connect_strava.png' %}"></a> <br>
 {%endif%}
+
+<h5> Admin Controls </h5>
 
 {%if admin %}
 <a href="/admin/users">View Users</a> <br>

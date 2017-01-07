@@ -7,10 +7,9 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
-<p>{{ name }} is logged in</p>
-{% endif%}
-<table>
+
+<div class="table-responsive">
+<table class="table">
   <tr>
     <td>Name</td>
     <td>Username</td>
@@ -19,7 +18,8 @@
 <tr>
   <td>{{user.name}}</td>
   <td>{{user.username}}</td>
-  <td><button onclick=deleteUser("{{user.username}}")>Delete</button></td>
+  <td><button class="btn btn-default" onclick=deleteUser("{{user.username}}")><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></td>
 {%endfor%}
 </table>
+</div>
 {% endblock %}

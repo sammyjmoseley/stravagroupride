@@ -1,8 +1,13 @@
 # python-getting-started
 
-To run : venv source env/bin/activate
+To run venv: source env/bin/activate
 
 To count number of line run: find . -name '*.*' -not -path "./env*" -not -path "./.git*" | xargs wc -l
+
+ideas for features to include:
+* virtual partner to complete segment fastest
+    could use historical power data to figure out pacing
+* select area on map and return who has ridden the most in it
 
 A barebones Python app, which can easily be deployed to Heroku.
 
