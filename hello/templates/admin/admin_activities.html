@@ -15,13 +15,13 @@
     <td>Activity Title</td>
     <td></td>
   </tr>
-{% for act in activities %}
-<tr>
-  <td>{{act.athlete_name}}</td>
-  <td>{{act.title}}</td>
-  <td><button class="btn btn-default" onclick=delete_activity({{act.id}})><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></td>
-  <!-- TODO Make this button borderless and have the trashcan change color on hover -->
-{% endfor %}
+  {% for act in activities %}
+  <tr>
+    <td>{{act.athlete_name}}</td>
+    <td>{{act.title}}</td>
+    <td><button class="btn btn-default" onclick=delete_activity({{act.id}})><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button></td>
+    <!-- TODO Make this button borderless and have the trashcan change color on hover -->
+  {% endfor %}
 </table>
 </div>
 {% endblock %}

@@ -8,24 +8,81 @@
 
 
 
+
 {% block content %}
+<!-- Shape Leaderboard Window -->
+<div class="modal fade" id="shape_leaderboard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document"> <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-
+        hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="shape_leaderboard_title">Leaderboard</h4>
+        Show:
+        <select id="leaderboard_size" onchange=filter_leaderboard()>
+          <option value="-1">all</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <tbody id ="shape_leaderboard_rows">
+          <tr>
+            <td>User</td>
+            <td>Distance (km)</td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button onclick=draw_map_area() id="btn_drawing" style="background: #ca4104">Draw Area</button>
+
 <table onload="on_load()">
   <tr>
-    <button onclick=draw_map_area() id="btn_drawing" style="background: #ca4104">Draw Area</button>
+
     <td class="maprow" width=80% valign="top">
       <div id="map" style="height:400px; width:100%;"</div>
       </td>
       <td class="maprow" width=20% valign="top">
-        <button onclick=select_all_visible()>Select All</button>
-        <button onclick=deselect_all_visible()>Deselect All</button>
-        <button onclick=repan_include_all()>Repan</button>
-        <button onclick=select_followers() id="btn_select_followers">Followers</button>
-        <input type="text" name="search" onkeyup="filter(document)" placeholder="Search.." />
+        <div class="btn-group">
+          <div class="dropdown">
+            <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="select_dropdown_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              Select...
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#" onclick="select_all_visible()">All</a></li>
+              <li><a href="#" onclick="deselect_all_visible()">None</a></li>
+              <li class="followers"><a href="#" onclick="select_followers()">Folowers</a></li>
+              <li class="followers"><a href="#" onclick="select_only_followers()">Only Folowers</a></li>
+            </ul>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="filter_dropdown_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              Filter...
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <li><a href="#" onclick="remove_filter()">Reset</a></li>
+              <li class="followers"><a href="#" id="filter_followers_btn" onclick="filter_followers()">Folowers</a></li>
+            </ul>
+          </div>
+        </div>
+        <input id="rider_search_field" type="text" name="search" onkeyup="filter()" placeholder="Search.." />
         <div class="select_users" id="user_list">
 
           {% for u in user_list %}
           <div name="{{ u.fullname }}">
-            <input type="checkbox" name="user_checkbox" id="check_{{u.athlete_id}}" onchange="checkbox_change()"/>{{ u.fullname }}<br />
+            <input type="checkbox" name="user_checkbox" id="check_{{u.athlete_id}}" data-id="{{u.athlete_id}}" onchange="checkbox_change()"/>{{ u.fullname }}<br />
+            <script> athlete_dict[{{ u.athlete_id }}] = "{{ u.fullname }}"; </script>
           </div>
           {% endfor %}
         </div>
@@ -59,6 +116,7 @@
         var infowindow = new google.maps.InfoWindow({
           content: contentString
         });
+        shapeInfoWindow = new google.maps.InfoWindow();
         polylines = [];
         infolines = [];
 
@@ -79,6 +137,8 @@
             }
           }
 
+
+
           infowindow.close();
           line_unclicked(infolines);
 
@@ -94,7 +154,55 @@
             line_clicked(infolines);
           } else{
             //if drawing is true add marker
-            // add marker
+            if(drawing){
+              var point  = new google.maps.Marker({
+                position: loc.latLng,
+                map: map,
+                draggable: true
+              });
+              drawing_points.push(point);
+              point.addListener('click', function(){
+                //find point in list
+                var i;
+                for(var j in drawing_points){
+                  if(drawing_points[j]==point){
+                    i=j;
+                  }
+                }
+                if(drawing_points.length-i>=3){
+                  var shape = new google.maps.Polygon({
+                    paths: drawing_points.slice(i).map(function(x){return x.position}),
+                    strokeColor: "#00FF00",
+                    strokeOpacity: 0.5,
+                    strokeWeight: 2,
+                    fillColor: "#00FF00",
+                    fillOpacity:0.35,
+                    draggable:true,
+                    editable:true
+                  });
+                  shape.addListener('click', function(e){
+                    shapeInfoWindow.setOptions({position: e.latLng});
+                    clicked_shape = shape;
+                    var infowindow_html = "<button type=\"button\" class=\"btn btn-default\" onclick=\"shape_rider_leaderboard()\">Show Leaderboard</button> ";
+                    infowindow_html += "<button type=\"button\" class=\"btn btn-default\" onclick=\"delete_shape()\">Delete</button> ";
+                    shapeInfoWindow.setContent(infowindow_html);
+                    shapeInfoWindow.open(map);
+                  });
+                  shape.setMap(map);
+                }
+
+
+                for (var j in drawing_points){
+                  drawing_points[j].setMap(null);
+                }
+                drawing_points = [];
+                draw_map_area();
+              });
+            }
+
+
+          // add marker
+
           }
         };
 
@@ -111,7 +219,7 @@
           });
           str = "<a href=\"https://www.strava.com/activities/" + id + "\">" + title + "</a>"
           polylines.push([path, str, points]);
-          add_polyline_dict(path, 'check_' + athlete_id);
+          add_polyline_dict(path, athlete_id);
           google.maps.event.addListener(path, 'click', function(e){
             click(e);
           });
